@@ -122,6 +122,25 @@ select option {
   color: var(--accent);
 }
 
+.api-key-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 11.5px;
+  color: #7dd3e0;
+  line-height: 1.5;
+  margin-top: 6px;
+  background: rgba(32, 184, 205, 0.08);
+  border: 1px solid rgba(32, 184, 205, 0.2);
+  border-radius: 7px;
+  padding: 7px 10px;
+}
+.api-key-notice svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--accent);
+}
+
 .model-card {
   background: var(--surface2);
   border: 1px solid var(--border);
@@ -723,4 +742,10 @@ select option {
   textarea {
     font-size: 16px;
   }
+}
+.pretty {
+  background: linear-gradient(90deg, rgb(248, 91, 117), rgb(245, 152, 167));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
