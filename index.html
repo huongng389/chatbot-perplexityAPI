@@ -1,119 +1,239 @@
-﻿<!DOCTYPE html>
+﻿<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Perplexity Chatbot - Huong Ng</title>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
-<link rel="stylesheet" href="styles.css"/>
-</head>
-<body>
-
-<!-- SIDEBAR -->
-<aside id="sidebar">
-  <button class="sidebar-close" id="sidebar-close" title="Close">&#x2715;</button>
-  <div class="sidebar-logo">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="12" cy="12" r="10" fill="#20b8cd" opacity=".15"/>
-      <path d="M8 12h8M12 8v8" stroke="#20b8cd" stroke-width="2" stroke-linecap="round"/>
-    </svg>
-    Perplexity Chat - Huong Ng
-  </div>
-
-  <!-- API Key -->
-  <div class="field-group">
-    <div class="section-label">API Key</div>
-    <label for="api-key-input">Your Perplexity API Key</label>
-    <div class="api-key-wrap">
-      <input type="password" id="api-key-input" placeholder="pplx-xxxxxxxxxxxxxxxx" autocomplete="off"/>
-      <button class="toggle-pw" id="toggle-pw" title="Show/hide key">
-        <svg id="pw-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-        </svg>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Perplexity Chatbot - Huong Ng</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- SIDEBAR -->
+    <aside id="sidebar">
+      <button class="sidebar-close" id="sidebar-close" title="Close">
+        &#x2715;
       </button>
-    </div>
-  </div>
-
-  <!-- Model selector -->
-  <div class="field-group">
-    <div class="section-label">Model</div>
-    <label for="model-select">Select AI Model</label>
-    <select id="model-select">
-      <optgroup label="🔍 Search">
-        <option value="sonar">sonar — Lightweight, fast search</option>
-        <option value="sonar-pro">sonar-pro — Advanced search &amp; follow-ups</option>
-      </optgroup>
-      <optgroup label="🧠 Reasoning">
-        <option value="sonar-reasoning">sonar-reasoning — Chain-of-thought + search</option>
-        <option value="sonar-reasoning-pro" selected>sonar-reasoning-pro — Precise CoT reasoning</option>
-      </optgroup>
-      <optgroup label="🔬 Research">
-        <option value="sonar-deep-research">sonar-deep-research — Exhaustive research reports</option>
-      </optgroup>
-    </select>
-    <div class="model-card" id="model-card">
-      <span class="model-badge badge-reasoning" id="model-badge">Reasoning</span>
-      <strong id="model-name">sonar-reasoning-pro</strong>
-      <span id="model-desc">Precise reasoning offering with Chain of Thought (CoT), powered by DeepSeek-R1. Best for complex analyses and logical problem-solving.</span>
-    </div>
-  </div>
-
-  <!-- System Prompt -->
-  <div class="field-group">
-    <div class="section-label">System Prompt</div>
-    <label for="system-prompt">Customize AI behavior</label>
-    <textarea id="system-prompt" placeholder="You are a helpful AI assistant. Answer clearly and concisely.">You are a helpful AI assistant. Answer clearly and concisely.</textarea>
-  </div>
-
-  <button class="btn btn-ghost" id="clear-btn-sidebar">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/>
-    </svg>
-    Clear Conversation
-  </button>
-
-  <div class="footer-text" style="margin-top:auto;font-size:11px;color:var(--text-muted);text-align:center;">
-    Huong Ng is playing around hihi ^_^
-  </div>
-</aside>
-
-<!-- MAIN -->
-<main id="main">
-  <header id="chat-header">
-    <button id="sidebar-toggle" title="Settings">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
-      </svg>
-    </button>
-    <h2>Chat</h2>
-    <span class="model-tag" id="header-model">sonar-reasoning-pro</span>
-  </header>
-
-  <div id="messages">
-    <div id="welcome">
-      <div class="wlc-icon">&#x2726;</div>
-      <h1>Perplexity Chatbot - Huong Ng</h1>
-      <p>Enter your API key in the sidebar, pick a model, optionally set a system prompt, and start chatting.</p>
-    </div>
-  </div>
-
-  <div id="input-area">
-    <div id="input-box">
-      <textarea id="user-input" rows="1" placeholder="Ask anything&#x2026;"></textarea>
-      <button id="send-btn" title="Send (Enter)">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+      <div class="sidebar-logo">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle cx="12" cy="12" r="10" fill="#20b8cd" opacity=".15" />
+          <path
+            d="M8 12h8M12 8v8"
+            stroke="#20b8cd"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
         </svg>
-      </button>
-    </div>
-    <div id="input-footer">
-      <span>Press <kbd style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:1px 5px;font-size:11px;">Enter</kbd> to send &nbsp;&middot;&nbsp; <kbd style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:1px 5px;font-size:11px;">Shift+Enter</kbd> for new line</span>
-      <button id="clear-btn">Clear chat</button>
-    </div>
-  </div>
-</main>
+        Perplexity Chat - Huong Ng
+      </div>
 
-<script src="script.js"></script>
-</body>
+      <!-- API Key -->
+      <div class="field-group">
+        <div class="section-label">API Key</div>
+        <label for="api-key-input">Your Perplexity API Key</label>
+        <div class="api-key-wrap">
+          <input
+            type="password"
+            id="api-key-input"
+            placeholder="pplx-xxxxxxxxxxxxxxxx"
+            autocomplete="off"
+          />
+          <button class="toggle-pw" id="toggle-pw" title="Show/hide key">
+            <svg
+              id="pw-eye"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Model selector -->
+      <div class="field-group">
+        <div class="section-label">Model</div>
+        <label for="model-select">Select AI Model</label>
+        <select id="model-select">
+          <optgroup label="🔍 Search">
+            <option value="sonar">sonar — Lightweight, fast search</option>
+            <option value="sonar-pro">
+              sonar-pro — Advanced search &amp; follow-ups
+            </option>
+          </optgroup>
+          <optgroup label="🧠 Reasoning">
+            <option value="sonar-reasoning">
+              sonar-reasoning — Chain-of-thought + search
+            </option>
+            <option value="sonar-reasoning-pro" selected>
+              sonar-reasoning-pro — Precise CoT reasoning
+            </option>
+          </optgroup>
+          <optgroup label="🔬 Research">
+            <option value="sonar-deep-research">
+              sonar-deep-research — Exhaustive research reports
+            </option>
+          </optgroup>
+        </select>
+        <div class="model-card" id="model-card">
+          <span class="model-badge badge-reasoning" id="model-badge"
+            >Reasoning</span
+          >
+          <strong id="model-name">sonar-reasoning-pro</strong>
+          <span id="model-desc"
+            >Precise reasoning offering with Chain of Thought (CoT), powered by
+            DeepSeek-R1. Best for complex analyses and logical
+            problem-solving.</span
+          >
+        </div>
+      </div>
+
+      <!-- System Prompt -->
+      <div class="field-group">
+        <div class="section-label">System Prompt</div>
+        <label for="system-prompt">Customize AI behavior</label>
+        <textarea
+          id="system-prompt"
+          placeholder="You are a helpful AI assistant. Answer clearly and concisely."
+        >
+You are a helpful AI assistant. Answer clearly and concisely.</textarea
+        >
+      </div>
+
+      <button class="btn btn-ghost" id="clear-btn-sidebar">
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polyline points="3 6 5 6 21 6" />
+          <path d="M19 6l-1 14H6L5 6" />
+          <path d="M10 11v6M14 11v6" />
+          <path d="M9 6V4h6v2" />
+        </svg>
+        Clear Conversation
+      </button>
+
+      <div
+        class="footer-text"
+        style="
+          margin-top: auto;
+          font-size: 11px;
+          color: var(--text-muted);
+          text-align: center;
+        "
+      >
+        Huong Ng is playing around hihi ^_^
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main id="main">
+      <header id="chat-header">
+        <button id="sidebar-toggle" title="Settings">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
+        <h2>Chat</h2>
+        <span class="model-tag" id="header-model">sonar-reasoning-pro</span>
+      </header>
+
+      <div id="messages">
+        <div id="welcome">
+          <div class="wlc-icon">&#x2726;</div>
+          <h1>Perplexity Chatbot - Huong Ng</h1>
+          <p>
+            Enter your API key in the sidebar, pick a model, optionally set a
+            system prompt, and start chatting.
+          </p>
+        </div>
+      </div>
+
+      <div id="input-area">
+        <div id="input-box">
+          <textarea
+            id="user-input"
+            rows="1"
+            placeholder="Ask anything&#x2026;"
+          ></textarea>
+          <button id="send-btn" title="Send (Enter)">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="22" y1="2" x2="11" y2="13" />
+              <polygon points="22 2 15 22 11 13 2 9 22 2" />
+            </svg>
+          </button>
+        </div>
+        <div id="input-footer">
+          <span
+            >Press
+            <kbd
+              style="
+                background: var(--surface2);
+                border: 1px solid var(--border);
+                border-radius: 4px;
+                padding: 1px 5px;
+                font-size: 11px;
+              "
+              >Enter</kbd
+            >
+            to send &nbsp;&middot;&nbsp;
+            <kbd
+              style="
+                background: var(--surface2);
+                border: 1px solid var(--border);
+                border-radius: 4px;
+                padding: 1px 5px;
+                font-size: 11px;
+              "
+              >Shift+Enter</kbd
+            >
+            for new line</span
+          >
+          <button id="clear-btn">Clear chat</button>
+        </div>
+      </div>
+    </main>
+
+    <div id="sidebar-overlay"></div>
+    <script src="script.js"></script>
+  </body>
 </html>
